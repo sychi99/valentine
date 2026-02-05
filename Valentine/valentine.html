@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Will You Be My Valentine? ❤️</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      min-height: 100vh;
+      color: #fff;
+      /* allow vertical scrolling */
+      overflow-y: auto;
+      /* breathing room so cards aren't glued to the edges */
+      padding: 40px 20px;
+    }
+    .card {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(14px);
+      border-radius: 28px;
+      padding: 36px 28px;
+      width: 92%;
+      max-width: 460px;
+      margin: 28px auto;
+      text-align: center;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+      animation: fadeIn 1s ease;
+    }
+    h1 { font-size: 28px; margin-bottom: 12px; }
+    h2 { font-size: 24px; margin-bottom: 12px; }
+    p { font-size: 16px; margin-bottom: 24px; line-height: 1.6; }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    button {
+      border: none;
+      padding: 12px 26px;
+      border-radius: 999px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    button:hover {
+      transform: scale(1.07);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+    }
+    .primary {
+      background: #fff;
+      color: #ff4d6d;
+      font-weight: 600;
+    }
+    .secondary {
+      background: rgba(255,255,255,0.3);
+      color: #fff;
+    }
+    .hidden { display: none; }
+    .heart {
+      position: absolute;
+      color: rgba(255,255,255,0.85);
+      animation: float 6s linear infinite;
+      font-size: 20px;
+      pointer-events: none;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes float {
+      from { transform: translateY(100vh); opacity: 0; }
+      to { transform: translateY(-10vh); opacity: 1; }
+    }
+    .progress {
+      margin-bottom: 20px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    /* Music control button */
+    .music-toggle {
+      position: fixed;
+      right: 18px;
+      top: 18px;
+      z-index: 9999;
+      background: rgba(255,255,255,0.9);
+      color: #ff4d6d;
+      border: none;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .music-toggle.playing { background: #ff4d6d; color: #fff; }
+    /* Background video and overlay */
+    .bg-video {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      pointer-events: none;
+    }
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.35));
+      pointer-events: none;
+    }
+    /* Fallback background image (used when video disabled) */
+    body.bg-image {
+      background: url('background.jpg') center/cover no-repeat fixed;
+    }
+    /* Media thumbnail inside cards (for step5) */
+    /* Media frame + thumbnail for step5: portrait 9:16 aspect ratio (responsive) */
+    .media-frame {
+      width: 60%;
+      max-width: 380px;
+      aspect-ratio: 9 / 16;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      margin: 0 auto 14px;
+      overflow: hidden;
+      background: #000;
+      max-height: 80vh;
+    }
+    @media (max-width: 480px) {
+      .media-frame { width: 92%; max-width: none; }
+    }
+    .media-thumb {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background video (put `background.mp4` and optional `background.jpg` in the same folder).
+       On mobile or when video fails to load, script will apply `body.bg-image` using background.jpg as fallback. -->
+  <video id="bgVideo" class="bg-video" autoplay muted loop playsinline preload="auto" poster="background.jpg">
+    <source src="background.mp4" type="video/mp4">
+    <!-- If video not supported, browser will ignore -->
+  </video>
+  <div class="bg-overlay" aria-hidden="true"></div>
+
+  <!-- Background music: place a file named `music.mp3` next to this HTML, or change the src to a remote URL -->
+  <audio id="bgMusic" preload="auto" loop>
+    <source src="music.mp3" type="audio/mpeg">
+    Browser kamu tidak mendukung audio.
+  </audio>
+
+  <!-- Visible play/pause toggle (autoplay is often blocked; user can toggle) -->
+  <button id="musicToggle" class="music-toggle" aria-pressed="false" title="Play / Pause musik">▶️</button>
+
+  <!-- STEP 1 -->
+  <div class="card" id="step1">
+    <img src="photo.jpg" alt="Foto Kenangan" style="width:100%;border-radius:20px;margin-bottom:16px;box-shadow:0 10px 25px rgba(0,0,0,0.25);" />
+  <div class="progress">1 / 6</div>
+    <h1>hyy cingta 💖</h1>
+    <p>
+      aku cuma lagi iseng aja sii sebenernya,
+      jadi aku bikin halaman kecil ini khusus buat kamu mwhehehe :3.
+    </p>
+    <div class="buttons">
+      <button class="primary" onclick="nextStep(1)">cuss ✨</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card hidden" id="step2">
+    <div class="progress">2 / 6</div>
+    <h2>tau gak sie…</h2>
+    <p>
+      aku tu bener bener ga nyangka banget bisa deket sama kamu,
+      kek awalnya kepencet follow?? siapa yg percaya coba wkwkwk.
+    </p>
+    <div class="buttons">
+      <button class="secondary" onclick="prevStep(2)">Kembali ◀</button>
+      <button class="primary" onclick="nextStep(2)">lanjut gak sie 💕</button>
+      <button class="secondary" onclick="tease()">bg udah bg 🙈</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card hidden" id="step3">
+    <div class="progress">3 / 6</div>
+    <h2>jadi gini…</h2>
+    <p>
+      ini kan hari valentine yak, aku kepikiran satu hal sederhana,
+      aku udah nitipin sesuatu buat kamu :>
+    </p>
+    <div class="buttons">
+      <button class="secondary" onclick="prevStep(3)">Kembali ◀</button>
+      <button class="primary" id="yesBtn">apa tu kak 🤔 </button>
+      <button class="secondary" id="noBtn">ogah amat 🙈</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="card hidden" id="step4">
+    <div class="progress">4 / 6</div>
+    <h2>ditunggu aja yh manizz 🥰</h2>
+    <p>
+      bilang kalo gasuka ya… serius.
+      takutnya risih pwiss,
+      aku cuma pengen bikin kamu ngerasa spesial di hari ini ❤️
+    </p>
+    <p>
+      mwhehe sekian terima gaji 😋
+    </p>
+    <div class="buttons">
+      <button class="secondary" onclick="prevStep(4)">Kembali ◀</button>
+      <button class="primary" onclick="nextStep(4)">Lanjut ✨</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="card hidden" id="step5">
+    <div class="progress">5 / 6</div>
+    <h2>Untukmu ❤️</h2>
+    <!-- Put a file named `gift.gif` or `gift.jpg` next to this HTML, or change the src to a remote URL -->
+    <div class="media-frame">
+      <img src="gift.gif" alt="Hadiah untukmu" class="media-thumb" onerror="this.onerror=null;this.src='gift.jpg'" />
+    </div>
+    <p>
+      Aku nyelipin sesuatu di atas — foto atau GIF yang aku suka dari kita.
+      Kalau gambarnya nggak muncul, pastikan file <code>gift.gif</code> atau <code>gift.jpg</code> ada di folder yang sama.
+    </p>
+    <div class="buttons">
+      <button class="secondary" onclick="prevStep(5)">Kembali ◀</button>
+      <button class="primary" onclick="nextStep(5)">Setuju 🎉</button>
+      <button class="secondary" onclick="nextStep(5)">Nanti dulu 🙃</button>
+    </div>
+  </div>
+
+  <!-- STEP 6 (final) -->
+  <div class="card hidden" id="step6">
+    <div class="progress">6 / 6</div>
+    <h2>Yeay! Terima kasih 🥰</h2>
+    <p>
+      Makasih udah mau baca sampai sini. Semoga hari kamu menyenangkan —
+      aku seneng kalo kamu mau jawab.
+    </p>
+    <div class="buttons">
+      <button class="secondary" onclick="prevStep(6)">Kembali ◀</button>
+      <button class="primary" onclick="spawnHearts();">Rayakan 🎈</button>
+    </div>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+
+    function nextStep(current) {
+      document.getElementById(`step${current}`).classList.add('hidden');
+      document.getElementById(`step${current + 1}`).classList.remove('hidden');
+    }
+
+    function prevStep(current) {
+      // Show previous step (current is the step number you're on)
+      const prev = current - 1;
+      if (prev < 1) return;
+      document.getElementById(`step${current}`).classList.add('hidden');
+      document.getElementById(`step${prev}`).classList.remove('hidden');
+    }
+
+    function tease() {
+      alert('Hehe tenang, baca pelan-pelan ya 😉');
+    }
+
+    noBtn.addEventListener('mouseover', () => {
+      const x = Math.random() * 220 - 110;
+      const y = Math.random() * 220 - 110;
+      noBtn.style.transform = `translate(${x}px, ${y}px)`;
+    });
+
+    yesBtn.addEventListener('click', () => {
+      document.getElementById('step3').classList.add('hidden');
+      document.getElementById('step4').classList.remove('hidden');
+      spawnHearts();
+    });
+
+    function spawnHearts() {
+      for (let i = 0; i < 30; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.innerText = '❤️';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 7000);
+      }
+    }
+
+    // --- Music control logic ---
+    (function() {
+      const bgMusic = document.getElementById('bgMusic');
+      const musicToggle = document.getElementById('musicToggle');
+      let isPlaying = false;
+
+      function updateToggle() {
+        musicToggle.setAttribute('aria-pressed', String(isPlaying));
+        if (isPlaying) {
+          musicToggle.classList.add('playing');
+          musicToggle.textContent = '⏸️';
+          musicToggle.title = 'Pause musik';
+        } else {
+          musicToggle.classList.remove('playing');
+          musicToggle.textContent = '▶️';
+          musicToggle.title = 'Play musik';
+        }
+      }
+
+      function playMusic() {
+        if (!bgMusic) return;
+        const p = bgMusic.play();
+        if (p && p.then) {
+          p.then(() => { isPlaying = true; updateToggle(); })
+           .catch(() => { /* Autoplay blocked; user must click */ });
+        } else {
+          // Older browsers
+          isPlaying = true; updateToggle();
+        }
+      }
+
+      function pauseMusic() {
+        if (!bgMusic) return;
+        bgMusic.pause();
+        isPlaying = false; updateToggle();
+      }
+
+      musicToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isPlaying) pauseMusic(); else playMusic();
+      });
+
+      // Try to start music on first user interaction (click anywhere)
+      function onFirstInteraction() {
+        playMusic();
+        window.removeEventListener('click', onFirstInteraction);
+        window.removeEventListener('keydown', onFirstInteraction);
+      }
+      window.addEventListener('click', onFirstInteraction, { once: true });
+      window.addEventListener('keydown', onFirstInteraction, { once: true });
+
+      // If the audio is already playing (some browsers allow autoplay), reflect state
+      bgMusic.addEventListener('play', () => { isPlaying = true; updateToggle(); });
+      bgMusic.addEventListener('pause', () => { isPlaying = false; updateToggle(); });
+
+      // Initialize the toggle UI
+      updateToggle();
+    })();
+
+    // --- Background video / image fallback logic ---
+    (function() {
+      const video = document.getElementById('bgVideo');
+      const body = document.body;
+
+      // Heuristics: disable video on touch devices or very slow connections
+      const isTouch = ('maxTouchPoints' in navigator && navigator.maxTouchPoints > 0) || /Mobi|Android/i.test(navigator.userAgent);
+      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      const slowConnection = connection && (connection.effectiveType && (connection.effectiveType.includes('2g') || connection.effectiveType.includes('slow-2g')));
+
+      function enableImageFallback() {
+        if (video) video.style.display = 'none';
+        body.classList.add('bg-image');
+      }
+
+      // If touch device or slow connection, prefer image fallback
+      if (isTouch || slowConnection) {
+        enableImageFallback();
+        return;
+      }
+
+      if (!video) return;
+
+      // If video errors while loading, fallback to image
+      video.addEventListener('error', () => {
+        enableImageFallback();
+      });
+
+      // Some browsers don't autoplay video unless muted/playsinline — we set muted above.
+      // Attempt to play; if rejected, fallback to image.
+      const p = video.play();
+      if (p && p.then) {
+        p.catch(() => {
+          // Autoplay prevented — keep video hidden and show fallback image so user sees nice background
+          enableImageFallback();
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
